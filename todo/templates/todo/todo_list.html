@@ -50,7 +50,7 @@
     </style>
 {% endblock %}
 
-{% block content %}>
+{% block content %}
     <div id='app'>
 
         <h1>My Todo App !</h1>
@@ -62,7 +62,7 @@
             <li>
                 <span>{{  todo.name }}:: {{ todo.todo }}</span>
                 <span class="removeBtn">
-                    <a href="{% url 'todo:delete' todo.id %}"> &#x00D7 </a></span>
+                    <a href="{% url 'todo:delete' todo.id %}">&#x00D7 </a></span>
             </li>
             {% endfor %}
         </ul>
