@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Vue-Django ToDo App{% endblock %}
+
+{% block extra-style %}
+    <style>
+        body {
+            text-align: center;
+            background-color: #ddd;
+        }
+        .inputBox {
+            margin: auto;
+            width: 80%;
+            background: white;
+            height: 50px;
+            border-radius: 50px;
+            line-height: 50px;
+        }
+        .inputBox .name {
+            border-style: none;
+            border-bottom: 1px solid #ddd;
+            width: 90px;
+            padding-left: 20px;
+            line-height: 20px;
+        }
+        .inputBox .item {
+            border-style: none;
+            border-bottom: 1px solid #ddd;
+            width: 400px;
+            margin-left: 50px;
+            padding-left: 20px;
+            line-height: 20px;
+        }
+        .todoList {
+            list-style: none;
+            padding: 10px 0;
+            text-align: left;
+        }
+        .todoList li {
+            display: flex;
+            height: 50px;
+            line-height: 50px;
+            margin: 0.5rem 0;
+            padding: 0 0.9rem;
+            background: white;
+            border-radius: 5px;
+        }
+        .removeBtn {
+            margin-left: auto;
+            font-size: 20px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div id='app'>
+
+        <h1>My Todo App !</h1>
+        <strong>서로 할 일이나 의견을 공유해 봅시다.</strong>
+        <br>
+
+        <div class="inputBox">
+            <input class="name" type="text" placeholder="name ..." v-model="name">
+            <!-- 변수를 바인딩하기 위한 작업, input binding, v-model="name" -->
+            <input class="item" type="text" placeholder="type anything welcomed ..." v-model.trim="newTodoItem"
+                v-on:keyup.enter="add_todo">
+                <!-- keyup.enter : enter를 치면 add_todo() 호출 -->
+            <!-- 변수를 바인딩하기 위한 작업, input binding, v-model="newTodoItem" -->
+            <!-- vue.js에 따르면 뷰 데이터를 html 코드에 바인딩 하는 것을 "데이터 바인딩"이라고 하고
+            데이터 바인딩에는 방향성이 있다. (일반적으로 vue.js -> html로 바인딩)
+            그러나 예외적으로 v-model로 데이터 바인딩된 경우 양방향으로 데이터 바인딩이 가능함 
+            입력값(html)을 vue.js 변수(name, newTodoITem)으로 역 데이터 바인딩 가능-->
+            <button v-on:click="add_todo()" class="btn btn-info brn-sm">ADD</button>
+            
+        </div>
+    
+        <ul class="todoList">
+            <li v-for="(todoItem, index) in todoItems">
+                <!-- v-for : vue에서 제공하는 for문을 이용한 데이터 바인딩 (양방향 데이터 바인딩 가능) -->
+                <span>{ todoItem.name }:: { todoItem.item }</span>
+                <!--  머스태쉬 문법으로 데이터 바인딩 (vue.js -> html로만 가능)-->
+                <span class="removeBtn" v-on:click.stop="remove_todo(todoItem, index)">&#x00D7</span>
+            </li>
+        </ul>
+
+    </div>
+
+    <script src="https://unpkg.com/vue/dist/vue.min.js"></script>
+    <script>
+        var vm = new Vue({
+            delimiters: ['{', '}'], // 머스태시 표현법이 django의 탬플릿 언어와 쫑이나서 머스태시 문법은 중괄호 하나로 변경
+            el: '#app', // 뷰에서 사용할 엘리먼트를 지정 (body의 div id값을 해당 엘리먼트 id 값으로 설정)
+            data: {
+                name: '', // 값을 받기 위한 변수
+                newTodoItem: '', // 값을 받기 위한 변수
+                todoItems:[ // 배열의 순서가 index에 입력되어 있음
+                    {name: '김석훈', item: 'Django 와 Vue.js 연동 프로그램을 만들고 있습니다.'},
+                    {name: '홍길동', item: '이름을 안쓰면 홍길동으로 나와요...'},
+                    {name: '이순신', item: '신에게는 아직 열두 척의 배가 있사옵니다.'},
+                    {name: '성춘향', item: '그네 타기'},                    
+                ],
+            },
+            methods: {
+                add_todo: function() {
+                    console.log("add_todo()..."); // 디버깅용
+                    if (this.newTodoItem == '') return; // newTodoItem 없이 입력 안됨
+                    if (this.name == '') this.name = '홍길동';
+
+                    this.todoItems.push({name: this.name, item: this.newTodoItem});
+                    this.clear_input(); // add이후 input값 클리어
+                    // axios post
+                },
+                remove_todo: function(todoItem, index){
+                    console.log("remove_todo()");
+                    this.todoItems.splice(index, 1); // 인덱스에서 하나를 지우겠다.
+                    // axios delete
+                    console.log(index)
+                },
+                clear_input: function() {
+                    this.name='';
+                    this.newTodoItem='';
+                }
+            },
+        })
+    </script>
+{% endblock %}
